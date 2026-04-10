@@ -1,15 +1,33 @@
 <?php
 
-$conn = new mysqli("mysql.railway.internal","root","LnVOUTmdkpbjVWQpYWvWuUOXZVZvdFOr","railway");
+$host = getenv("MYSQLHOST");
+$user = getenv("MYSQLUSER");
+$pass = getenv("MYSQLPASSWORD");
+$db   = getenv("MYSQLDATABASE");
+$port = getenv("MYSQLPORT");
 
-$result = $conn->query("SELECT * FROM absensi ORDER BY waktu DESC");
+$conn = new mysqli($host, $user, $pass, $db, $port);
 
-echo "<h2>Data Absensi</h2>";
-
-while($row = $result->fetch_assoc()){
-    echo $row['nama']." - ".$row['waktu']."<br>";
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
-$conn->close();
+if (!isset($_GET['nama']) || empty($_GET['nama'])) {
+    echo "nama kosong";
+    exit;
+}
 
+$nama = $_GET['nama'];
+
+$stmt = $conn->prepare("INSERT INTO absensi (nama) VALUES (?)");
+$stmt->bind_param("s", $nama);
+
+if($stmt->execute()){
+    echo "success";
+}else{
+    echo "error";
+}
+
+$stmt->close();
+$conn->close();
 ?>
