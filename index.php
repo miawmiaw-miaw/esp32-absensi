@@ -2,11 +2,17 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = getenv("MYSQLHOST");
-$user = getenv("MYSQLUSER");
-$pass = getenv("MYSQLPASSWORD");
-$db   = getenv("MYSQLDATABASE");
-$port = getenv("MYSQLPORT");
+// Ambil ENV (pakai fallback biar pasti kebaca)
+$host = getenv("MYSQLHOST") ?: $_ENV["MYSQLHOST"] ?? null;
+$user = getenv("MYSQLUSER") ?: $_ENV["MYSQLUSER"] ?? null;
+$pass = getenv("MYSQLPASSWORD") ?: $_ENV["MYSQLPASSWORD"] ?? null;
+$db   = getenv("MYSQLDATABASE") ?: $_ENV["MYSQLDATABASE"] ?? null;
+$port = getenv("MYSQLPORT") ?: $_ENV["MYSQLPORT"] ?? 3306;
+
+// Validasi
+if (!$host || !$user || !$db) {
+    die("ENV database tidak terbaca");
+}
 
 try {
     $conn = new PDO("mysql:host=$host;port=$port;dbname=$db", $user, $pass);
@@ -16,8 +22,12 @@ try {
 
     echo "<h2>Data Absensi</h2>";
 
-    foreach ($stmt as $row) {
-        echo $row['nama'] . " - " . $row['waktu'] . "<br>";
+    if ($stmt->rowCount() > 0) {
+        foreach ($stmt as $row) {
+            echo htmlspecialchars($row['nama']) . " - " . $row['waktu'] . "<br>";
+        }
+    } else {
+        echo "Belum ada data";
     }
 
 } catch (PDOException $e) {
