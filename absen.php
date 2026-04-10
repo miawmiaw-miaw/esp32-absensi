@@ -2,11 +2,17 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = getenv("MYSQLHOST");
-$user = getenv("MYSQLUSER");
-$pass = getenv("MYSQLPASSWORD");
-$db   = getenv("MYSQLDATABASE");
-$port = getenv("MYSQLPORT");
+// Ambil ENV (pakai fallback)
+$host = getenv("MYSQLHOST") ?: $_ENV["MYSQLHOST"] ?? null;
+$user = getenv("MYSQLUSER") ?: $_ENV["MYSQLUSER"] ?? null;
+$pass = getenv("MYSQLPASSWORD") ?: $_ENV["MYSQLPASSWORD"] ?? null;
+$db   = getenv("MYSQLDATABASE") ?: $_ENV["MYSQLDATABASE"] ?? null;
+$port = getenv("MYSQLPORT") ?: $_ENV["MYSQLPORT"] ?? 3306;
+
+// Validasi
+if (!$host || !$user || !$db) {
+    die("ENV database tidak terbaca");
+}
 
 if (!isset($_GET['nama']) || empty($_GET['nama'])) {
     echo "nama kosong";
