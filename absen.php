@@ -1,30 +1,32 @@
 <?php
-
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
 $host = getenv("MYSQLHOST");
 $user = getenv("MYSQLUSER");
 $pass = getenv("MYSQLPASSWORD");
 $db   = getenv("MYSQLDATABASE");
 $port = getenv("MYSQLPORT");
 
-$conn = new mysqli($host, $user, $pass, $db, $port);
-
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+if (!isset($_GET['nama']) || empty($_GET['nama'])) {
+    echo "nama kosong";
+    exit;
 }
 
-$result = $conn->query("SELECT * FROM absensi ORDER BY waktu DESC");
+$nama = $_GET['nama'];
 
-echo "<h2>Data Absensi</h2>";
+try {
+    $conn = new PDO("mysql:host=$host;port=$port;dbname=$db", $user, $pass);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()){
-        echo $row['nama']." - ".$row['waktu']."<br>";
-    }
-} else {
-    echo "Belum ada data";
+    $stmt = $conn->prepare("INSERT INTO absensi (nama) VALUES (:nama)");
+    $stmt->bindParam(':nama', $nama);
+
+    $stmt->execute();
+
+    echo "success";
+
+} catch (PDOException $e) {
+    echo "error: " . $e->getMessage();
 }
-
-$conn->close();
 ?>
