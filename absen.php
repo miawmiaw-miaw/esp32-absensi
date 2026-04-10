@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 $host = getenv("MYSQLHOST") ?: $_ENV["MYSQLHOST"] ?? null;
 $user = getenv("MYSQLUSER") ?: $_ENV["MYSQLUSER"] ?? null;
 $pass = getenv("MYSQLPASSWORD") ?: $_ENV["MYSQLPASSWORD"] ?? null;
-$db   = getenv("MYSQLDATABASE") ?: $_ENV["MYSQLDATABASE"] ?? null;
+$db   = getenv("MYSQL_DATABASE") ?: $_ENV["MYSQLDATABASE"] ?? null;
 $port = getenv("MYSQLPORT") ?: $_ENV["MYSQLPORT"] ?? 3306;
 
 // Validasi
